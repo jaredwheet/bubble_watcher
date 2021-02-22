@@ -55,14 +55,6 @@ const getScores = async () => {
   }
 };
 
-const switchTeamName = async (shortName) => {
-  let teams = await getTeams();
-
-  teams.data.forEach((team) => {
-    if (team.Key === shortName) return team.School;
-  });
-};
-
 const displayScores = async () => {
   const bubbleScores = [];
   const scores = await getScores();
@@ -91,6 +83,16 @@ const displayScores = async () => {
     });
   });
 
+  bubbleScores.forEach((score) => {
+    teams.data.forEach((team) => {
+      if (team.Key == score.homeTeam) {
+        score.homeTeam = team.School;
+      } else if (team.Key == score.awayTeam) {
+        score.awayTeam = team.School;
+      }
+    });
+  });
+
   const filteredBubbleScores = bubbleScores.filter(
     (score) =>
       score.gameStatus == "Final" ||
@@ -99,89 +101,145 @@ const displayScores = async () => {
   );
 
   console.log(filteredBubbleScores);
+
   filteredBubbleScores.forEach((score) => {
     if (
       (score.homeScore > score.awayScore) &
       (score.gameStatus === "InProgress")
-    ) {
-      client.post(
-        "statuses/update",
-        {
-          status: `BUBBLE WATCHER SCORE UPDATE
-
-  ${score.homeTeam} ${score.homeScore} - ${score.awayTeam} ${score.awayScore}
-  ${score.timeRemaining}
-  ${score.location}
-                            `,
-        },
-        function (error, tweet, response) {
-          if (!error) {
-            console.log(tweet);
-          }
-        }
+    )
+      inProgHomeWinning(
+        score.homeTeam,
+        score.homeScore,
+        score.awayTeam,
+        score.awayScore,
+        score.timeRemaining,
+        score.location
       );
-    } else if (
+    else if (
       (score.homeScore > score.awayScore) &
       (score.gameStatus === "Final")
-    ) {
-      client.post(
-        "statuses/update",
-        {
-          status: `BUBBLE WATCHER FINAL SCORE UPDATE
-
-  ${score.homeTeam} ${score.homeScore} - ${score.awayTeam} ${score.awayScore}
-  ${score.gameStatus}
-  ${score.location}
-                              `,
-        },
-        function (error, tweet, response) {
-          if (!error) {
-            console.log(tweet);
-          }
-        }
-      );
-    } else if (
+    )
+      try {
+        finalHomeWinner(
+          score.homeTeam,
+          score.homeScore,
+          score.awayTeam,
+          score.awayScore,
+          score.gameStatus,
+          score.location
+        );
+      } catch (e) {
+        throw e;
+      }
+    else if (
       (score.homeScore < score.awayScore) &
       (score.gameStatus === "InProgress")
     ) {
-      client.post(
-        "statuses/update",
-        {
-          status: `BUBBLE WATCHER SCORE UPDATE
-
-  ${score.awayTeam} ${score.awayScore} - ${score.homeTeam} ${score.homeScore}
-  ${score.timeRemaining}
-  ${score.location}
-                                `,
-        },
-        function (error, tweet, response) {
-          if (!error) {
-            console.log(tweet);
-          }
-        }
+      inProgAwayWinning(
+        score.homeTeam,
+        score.homeScore,
+        score.awayTeam,
+        score.awayScore,
+        score.timeRemaining,
+        score.location
       );
     } else if (
       (score.homeScore < score.awayScore) &
       (score.gameStatus === "Final")
     ) {
-      client.post(
-        "statuses/update",
-        {
-          status: `BUBBLE WATCHER FINAL SCORE UPDATE
-
-  ${score.awayTeam} ${score.awayScore} - ${score.homeTeam} ${score.homeScore}
-  ${score.gameStatus}
-  ${score.location}
-                                  `,
-        },
-        function (error, tweet, response) {
-          if (!error) {
-            console.log(tweet);
-          }
-        }
+      finalAwayWinner(
+        score.homeTeam,
+        score.homeScore,
+        score.awayTeam,
+        score.awayScore,
+        score.gameStatus,
+        score.location
       );
     }
   });
 };
+
+function inProgHomeWinning(
+  homeTeam,
+  homeScore,
+  awayTeam,
+  awayScore,
+  timeLeft,
+  location
+) {
+  try {
+    client.post("statuses/update", {
+      status: `BUBBLE WATCHER SCORE UPDATE
+                                      
+          ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
+          ${timeLeft}
+          ${location}`,
+    });
+  } catch (e) {
+    throw e;
+  }
+}
+
+function inProgAwayWinning(
+  homeTeam,
+  homeScore,
+  awayTeam,
+  awayScore,
+  timeLeft,
+  location
+) {
+  try {
+    client.post("statuses/update", {
+      status: `BUBBLE WATCHER SCORE UPDATE
+  
+  ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
+  ${timeLeft}
+  ${location}
+                                  `,
+    });
+  } catch (e) {
+    throw e;
+  }
+}
+
+function finalHomeWinner(
+  homeTeam,
+  homeScore,
+  awayTeam,
+  awayScore,
+  status,
+  location
+) {
+  client.post("statuses/update", {
+    status: `BUBBLE WATCHER FINAL SCORE 
+  
+  ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
+  ${status}
+  ${location}
+                            `,
+  });
+}
+
+async function finalAwayWinner(
+  homeTeam,
+  homeScore,
+  awayTeam,
+  awayScore,
+  status,
+  location
+) {
+  try {
+    client.post("statuses/update", {
+      status: `BUBBLE WATCHER FINAL SCORE 
+  
+  ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
+  ${status}
+  ${location}
+                                                  `,
+    });
+  } catch (e) {
+    throw e;
+  }
+}
 
 displayScores();
