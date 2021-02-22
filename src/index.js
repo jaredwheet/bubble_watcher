@@ -2,6 +2,11 @@ const axios = require("axios");
 const Twitter = require("twitter");
 require("dotenv").config();
 
+process.on("unhandledRejection", (error) => {
+  // Will print "unhandledRejection err is not defined"
+  console.log("unhandledRejection", error.message);
+});
+
 //twitter client config
 const client = new Twitter({
   consumer_key: process.env.CONSUMER_KEY,
@@ -103,23 +108,23 @@ const displayScores = async () => {
   console.log(filteredBubbleScores);
 
   filteredBubbleScores.forEach((score) => {
-    if (
-      (score.homeScore > score.awayScore) &
-      (score.gameStatus === "InProgress")
-    )
-      inProgHomeWinning(
-        score.homeTeam,
-        score.homeScore,
-        score.awayTeam,
-        score.awayScore,
-        score.timeRemaining,
-        score.location
-      );
-    else if (
-      (score.homeScore > score.awayScore) &
-      (score.gameStatus === "Final")
-    )
-      try {
+    try {
+      if (
+        (score.homeScore > score.awayScore) &
+        (score.gameStatus === "InProgress")
+      )
+        inProgHomeWinning(
+          score.homeTeam,
+          score.homeScore,
+          score.awayTeam,
+          score.awayScore,
+          score.timeRemaining,
+          score.location
+        );
+      else if (
+        (score.homeScore > score.awayScore) &
+        (score.gameStatus === "Final")
+      )
         finalHomeWinner(
           score.homeTeam,
           score.homeScore,
@@ -128,45 +133,45 @@ const displayScores = async () => {
           score.gameStatus,
           score.location
         );
-      } catch (e) {
-        throw e;
+      else if (
+        (score.homeScore < score.awayScore) &
+        (score.gameStatus === "InProgress")
+      ) {
+        inProgAwayWinning(
+          score.homeTeam,
+          score.homeScore,
+          score.awayTeam,
+          score.awayScore,
+          score.timeRemaining,
+          score.location
+        );
+      } else if (
+        (score.homeScore < score.awayScore) &
+        (score.gameStatus === "Final")
+      ) {
+        finalAwayWinner(
+          score.homeTeam,
+          score.homeScore,
+          score.awayTeam,
+          score.awayScore,
+          score.gameStatus,
+          score.location
+        );
       }
-    else if (
-      (score.homeScore < score.awayScore) &
-      (score.gameStatus === "InProgress")
-    ) {
-      inProgAwayWinning(
-        score.homeTeam,
-        score.homeScore,
-        score.awayTeam,
-        score.awayScore,
-        score.timeRemaining,
-        score.location
-      );
-    } else if (
-      (score.homeScore < score.awayScore) &
-      (score.gameStatus === "Final")
-    ) {
-      finalAwayWinner(
-        score.homeTeam,
-        score.homeScore,
-        score.awayTeam,
-        score.awayScore,
-        score.gameStatus,
-        score.location
-      );
+    } catch (e) {
+      console.error(e);
     }
   });
 };
 
-function inProgHomeWinning(
+const inProgHomeWinning = async (
   homeTeam,
   homeScore,
   awayTeam,
   awayScore,
   timeLeft,
   location
-) {
+) => {
   try {
     client.post("statuses/update", {
       status: `BUBBLE WATCHER SCORE UPDATE
@@ -176,18 +181,17 @@ function inProgHomeWinning(
           ${location}`,
     });
   } catch (e) {
-    throw e;
+    console.error(e);
   }
-}
-
-function inProgAwayWinning(
+};
+const inProgAwayWinning = async (
   homeTeam,
   homeScore,
   awayTeam,
   awayScore,
   timeLeft,
   location
-) {
+) => {
   try {
     client.post("statuses/update", {
       status: `BUBBLE WATCHER SCORE UPDATE
@@ -198,48 +202,52 @@ function inProgAwayWinning(
                                   `,
     });
   } catch (e) {
-    throw e;
+    console.error(e);
   }
-}
+};
 
-function finalHomeWinner(
+const finalHomeWinner = async (
   homeTeam,
   homeScore,
   awayTeam,
   awayScore,
   status,
   location
-) {
-  client.post("statuses/update", {
-    status: `BUBBLE WATCHER FINAL SCORE 
-  
-  ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
-  ${status}
-  ${location}
-                            `,
-  });
-}
-
-async function finalAwayWinner(
-  homeTeam,
-  homeScore,
-  awayTeam,
-  awayScore,
-  status,
-  location
-) {
+) => {
   try {
     client.post("statuses/update", {
       status: `BUBBLE WATCHER FINAL SCORE 
-  
-  ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
-  ${status}
-  ${location}
-                                                  `,
+        
+        ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
+        ${status}
+        ${location}
+                                  `,
     });
   } catch (e) {
-    throw e;
+    console.error(e);
   }
-}
+};
+
+const finalAwayWinner = async (
+  homeTeam,
+  homeScore,
+  awayTeam,
+  awayScore,
+  status,
+  location
+) => {
+  try {
+    client.post("statuses/update", {
+      status: `BUBBLE WATCHER FINAL SCORE 
+    
+    ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
+    ${status}
+    ${location}
+                                                    `,
+    });
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 displayScores();
