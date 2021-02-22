@@ -2,6 +2,8 @@ const axios = require("axios");
 const Twitter = require("twitter");
 require("dotenv").config();
 
+const today = new Date().toISOString().slice(0, 10);
+
 //twitter client config
 const client = new Twitter({
   consumer_key: process.env.CONSUMER_KEY,
@@ -47,7 +49,7 @@ const getTeams = async () => {
 const getScores = async () => {
   try {
     return await axios.get(
-      "https://api.sportsdata.io/v3/cbb/scores/json/GamesByDate/2021-Feb-21",
+      `https://api.sportsdata.io/v3/cbb/scores/json/GamesByDate/${today}`,
       options
     );
   } catch (error) {
@@ -173,11 +175,11 @@ const inProgHomeWinning = async (
 ) => {
   try {
     await client.post("statuses/update", {
-      status: `BUBBLE WATCHER SCORE UPDATE
+      status: `SCORE UPDATE
                                       
-          ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
-          ${timeLeft}
-          ${location}`,
+${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
+${timeLeft}
+${location}`,
     });
   } catch (e) {
     console.error(e);
@@ -193,11 +195,11 @@ const inProgAwayWinning = async (
 ) => {
   try {
     await client.post("statuses/update", {
-      status: `BUBBLE WATCHER SCORE UPDATE
-  
-  ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
-  ${timeLeft}
-  ${location}
+      status: `SCORE UPDATE
+
+${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
+${timeLeft}
+${location}
                                   `,
     });
   } catch (e) {
@@ -215,11 +217,11 @@ const finalHomeWinner = async (
 ) => {
   try {
     await client.post("statuses/update", {
-      status: `BUBBLE WATCHER FINAL SCORE 
-        
-        ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
-        ${status}
-        ${location}
+      status: `FINAL SCORE 
+
+${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
+${status}
+${location}
                                   `,
     });
   } catch (e) {
@@ -237,11 +239,11 @@ const finalAwayWinner = async (
 ) => {
   try {
     await client.post("statuses/update", {
-      status: `BUBBLE WATCHER FINAL SCORE 
+      status: `FINAL SCORE 
     
-    ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
-    ${status}
-    ${location}
+${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
+${status}
+${location}
                                                     `,
     });
   } catch (e) {
