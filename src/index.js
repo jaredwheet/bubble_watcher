@@ -2,11 +2,6 @@ const axios = require("axios");
 const Twitter = require("twitter");
 require("dotenv").config();
 
-process.on("unhandledRejection", (error) => {
-  // Will print "unhandledRejection err is not defined"
-  console.log("unhandledRejection", error.message);
-});
-
 //twitter client config
 const client = new Twitter({
   consumer_key: process.env.CONSUMER_KEY,
@@ -60,55 +55,9 @@ const getScores = async () => {
   }
 };
 
-const displayScores = async () => {
-  const bubbleScores = [];
-  const scores = await getScores();
-  const teams = await getTeams();
-
-  // Trying to replace the key (short name ) with the school name which is easier to read
-  //   await scores.data.forEach((score) => {
-  //     score.HomeTeam = switchTeamName(score.HomeTeam);
-  //     score.AwayTeam = "away";
-  //   });
-
-  scores.data.forEach((score) => {
-    bubbleTeams.forEach((team) => {
-      if (team === score.HomeTeam || team === score.AwayTeam) {
-        bubbleScores.push({
-          gameStatus: score.Status,
-          homeTeam: score.HomeTeam,
-          awayTeam: score.AwayTeam,
-          homeScore: score.HomeTeamScore,
-          awayScore: score.AwayTeamScore,
-          half: score.Period,
-          timeRemaining: `${score.TimeRemainingMinutes}:${score.TimeRemainingSeconds}`,
-          location: `${score.Stadium.Name}, ${score.Stadium.City}, ${score.Stadium.State}`,
-        });
-      }
-    });
-  });
-
-  bubbleScores.forEach((score) => {
-    teams.data.forEach((team) => {
-      if (team.Key == score.homeTeam) {
-        score.homeTeam = team.School;
-      } else if (team.Key == score.awayTeam) {
-        score.awayTeam = team.School;
-      }
-    });
-  });
-
-  const filteredBubbleScores = bubbleScores.filter(
-    (score) =>
-      score.gameStatus == "Final" ||
-      score.gameStatus == "InProgress" ||
-      score.gameStatus == "Scheduled"
-  );
-
-  console.log(filteredBubbleScores);
-
-  filteredBubbleScores.forEach((score) => {
-    try {
+const tweetScores = async (filteredBubbleScores) => {
+  try {
+    filteredBubbleScores.forEach((score) => {
       if (
         (score.homeScore > score.awayScore) &
         (score.gameStatus === "InProgress")
@@ -158,10 +107,60 @@ const displayScores = async () => {
           score.location
         );
       }
-    } catch (e) {
-      console.error(e);
-    }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const displayScores = async () => {
+  const bubbleScores = [];
+  const scores = await getScores();
+  const teams = await getTeams();
+
+  // Trying to replace the key (short name ) with the school name which is easier to read
+  //   await scores.data.forEach((score) => {
+  //     score.HomeTeam = switchTeamName(score.HomeTeam);
+  //     score.AwayTeam = "away";
+  //   });
+
+  scores.data.forEach((score) => {
+    bubbleTeams.forEach((team) => {
+      if (team === score.HomeTeam || team === score.AwayTeam) {
+        bubbleScores.push({
+          gameStatus: score.Status,
+          homeTeam: score.HomeTeam,
+          awayTeam: score.AwayTeam,
+          homeScore: score.HomeTeamScore,
+          awayScore: score.AwayTeamScore,
+          half: score.Period,
+          timeRemaining: `${score.TimeRemainingMinutes}:${score.TimeRemainingSeconds}`,
+          location: `${score.Stadium.Name}, ${score.Stadium.City}, ${score.Stadium.State}`,
+        });
+      }
+    });
   });
+
+  bubbleScores.forEach((score) => {
+    teams.data.forEach((team) => {
+      if (team.Key == score.homeTeam) {
+        score.homeTeam = team.School;
+      } else if (team.Key == score.awayTeam) {
+        score.awayTeam = team.School;
+      }
+    });
+  });
+
+  const filteredBubbleScores = bubbleScores.filter(
+    (score) =>
+      score.gameStatus == "Final" ||
+      score.gameStatus == "InProgress" ||
+      score.gameStatus == "Scheduled"
+  );
+
+  console.log(filteredBubbleScores);
+
+  await tweetScores(filteredBubbleScores);
 };
 
 const inProgHomeWinning = async (
@@ -173,7 +172,7 @@ const inProgHomeWinning = async (
   location
 ) => {
   try {
-    client.post("statuses/update", {
+    await client.post("statuses/update", {
       status: `BUBBLE WATCHER SCORE UPDATE
                                       
           ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
@@ -193,7 +192,7 @@ const inProgAwayWinning = async (
   location
 ) => {
   try {
-    client.post("statuses/update", {
+    await client.post("statuses/update", {
       status: `BUBBLE WATCHER SCORE UPDATE
   
   ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
@@ -215,7 +214,7 @@ const finalHomeWinner = async (
   location
 ) => {
   try {
-    client.post("statuses/update", {
+    await client.post("statuses/update", {
       status: `BUBBLE WATCHER FINAL SCORE 
         
         ${homeTeam} ${homeScore} - ${awayTeam} ${awayScore}
@@ -237,7 +236,7 @@ const finalAwayWinner = async (
   location
 ) => {
   try {
-    client.post("statuses/update", {
+    await client.post("statuses/update", {
       status: `BUBBLE WATCHER FINAL SCORE 
     
     ${awayTeam} ${awayScore} - ${homeTeam} ${homeScore}
