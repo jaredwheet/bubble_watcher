@@ -21,4 +21,4 @@ jobs:
         run: |
           ls
           npm install
-          node src/index.js
+          node src/scores.js
