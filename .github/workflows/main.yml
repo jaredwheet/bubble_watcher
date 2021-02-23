@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Run every 5 mins
+      - name: Run every 30 mins
         env:
           CONSUMER_KEY: ${{ secrets.CONSUMER_KEY }}
           CONSUMER_SECRET: ${{ secrets.CONSUMER_SECRET }}
