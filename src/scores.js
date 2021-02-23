@@ -3,6 +3,7 @@ const Twitter = require("twitter");
 require("dotenv").config();
 
 const today = new Date().toLocaleString("en-US").slice(0, 9);
+console.log(today);
 let dateArray = today.split("/");
 let newDateArray = [dateArray[2], dateArray[0], dateArray[1]];
 let joinedDate = newDateArray.join();
