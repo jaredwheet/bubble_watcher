@@ -162,7 +162,7 @@ const displayScores = async () => {
 
   console.log(filteredBubbleScores);
 
-  await tweetScores(filteredBubbleScores);
+  if (!filteredBubblesScores.length === 0) await tweetScores(filteredBubbleScores);
 };
 
 const inProgHomeWinning = async (

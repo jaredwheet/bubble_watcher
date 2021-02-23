@@ -89,22 +89,24 @@ const tweetTodaysGames = async () => {
     (game) => game.gameStatus == "Scheduled"
   );
   let todaysGamesBlock = "";
-  try {
-    filteredBubbleGames.forEach((game) => {
-      todaysGamesBlock += `${game.awayTeam} @ ${game.homeTeam} - ${game.location} \n`;
-    });
+  if (!filteredBubbleGames.length === 0) {
     try {
-      client.post("statuses/update", {
-        status: `TODAY'S BUBBLE GAMES TO WATCH
-        
+      filteredBubbleGames.forEach((game) => {
+        todaysGamesBlock += `${game.awayTeam} @ ${game.homeTeam} - ${game.location} \n`;
+      });
+      try {
+        client.post("statuses/update", {
+          status: `TODAY'S BUBBLE GAMES TO WATCH
+
 ${todaysGamesBlock}
         `,
-      });
+        });
+      } catch (e) {
+        console.error(e);
+      }
     } catch (e) {
       console.error(e);
     }
-  } catch (e) {
-    console.error(e);
   }
 };
 tweetTodaysGames();
