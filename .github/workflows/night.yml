@@ -1,4 +1,4 @@
-name: Morning Tweet
+name: Night Tweet
 
 on:
   schedule:
