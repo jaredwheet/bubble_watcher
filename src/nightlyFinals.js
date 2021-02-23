@@ -2,7 +2,11 @@ const axios = require("axios");
 const Twitter = require("twitter");
 require("dotenv").config();
 
-const today = new Date().toISOString().slice(0, 10);
+const today = new Date().toLocaleString("en-US").slice(0, 9);
+let dateArray = today.split("/");
+let newDateArray = [dateArray[2], dateArray[0], dateArray[1]];
+let joinedDate = newDateArray.join();
+let todaysDate = joinedDate.replace(/,/g, "-");
 
 //twitter client config
 const client = new Twitter({
@@ -49,7 +53,7 @@ const getTeams = async () => {
 const getScores = async () => {
   try {
     return await axios.get(
-      `https://api.sportsdata.io/v3/cbb/scores/json/GamesByDate/${today}`,
+      `https://api.sportsdata.io/v3/cbb/scores/json/GamesByDate/${todaysDate}`,
       options
     );
   } catch (error) {
