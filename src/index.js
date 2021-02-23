@@ -7,6 +7,7 @@ let dateArray = today.split("/");
 let newDateArray = [dateArray[2], dateArray[0], dateArray[1]];
 let joinedDate = newDateArray.join();
 let todaysDate = joinedDate.replace(/,/g, "-");
+console.log("TODAYS DATE!!!!", todaysDate);
 
 //twitter client config
 const client = new Twitter({
