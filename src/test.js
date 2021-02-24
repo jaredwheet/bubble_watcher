@@ -65,7 +65,7 @@ const getTeams = async () => {
 const getScores = async () => {
   try {
     return await axios.get(
-      `https://api.sportsdata.io/v3/cbb/scores/json/GamesByDate/${todaysDate}`,
+      `https://api.sportsdata.io/v3/cbb/scores/json/GamesByDate/2021-FEB-11`,
       options
     );
   } catch (error) {
@@ -135,6 +135,7 @@ const displayScores = async () => {
   const bubbleScores = [];
   const scores = await getScores();
   const teams = await getTeams();
+  console.log(scores);
 
   // Trying to replace the key (short name ) with the school name which is easier to read
   //   await scores.data.forEach((score) => {
@@ -178,7 +179,7 @@ const displayScores = async () => {
 
   console.log(filteredBubbleScores);
 
-  if (filteredBubbleScores.length > 0) await tweetScores(filteredBubbleScores);
+  //   if (filteredBubbleScores.length > 0) await tweetScores(filteredBubbleScores);
 };
 
 const inProgHomeWinning = async (

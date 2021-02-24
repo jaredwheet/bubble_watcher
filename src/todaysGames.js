@@ -37,6 +37,16 @@ const bubbleTeams = [
   "UTAHST",
   "DUKE",
   "SYRA",
+  "CLMSN",
+  "LOU",
+  "NCAR",
+  "STJOHN",
+  "MISS",
+  "WICHST",
+  "SMU",
+  "LOYCH",
+  "BOISE",
+  "WKENT",
 ];
 
 const getTeams = async () => {
@@ -92,12 +102,14 @@ const tweetTodaysGames = async () => {
   const filteredBubbleGames = bubbleGames.filter(
     (game) => game.gameStatus == "Scheduled"
   );
+  console.log(filteredBubbleGames);
   let todaysGamesBlock = "";
-  if (!filteredBubbleGames.length === 0) {
+  if (filteredBubbleGames.length > 0) {
     try {
       filteredBubbleGames.forEach((game) => {
         todaysGamesBlock += `${game.awayTeam} @ ${game.homeTeam} - ${game.location} \n`;
       });
+      console.log(todaysGamesBlock);
       try {
         client.post("statuses/update", {
           status: `TODAY'S BUBBLE GAMES TO WATCH

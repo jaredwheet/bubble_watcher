@@ -37,6 +37,16 @@ const bubbleTeams = [
   "UTAHST",
   "DUKE",
   "SYRA",
+  "CLMSN",
+  "LOU",
+  "NCAR",
+  "STJOHN",
+  "MISS",
+  "WICHST",
+  "SMU",
+  "LOYCH",
+  "BOISE",
+  "WKENT",
 ];
 
 const getTeams = async () => {
