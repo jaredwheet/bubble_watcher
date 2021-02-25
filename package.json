@@ -1,26 +1,25 @@
 {
   "name": "bubble_watcher",
   "version": "1.0.0",
-  "description": "ncaa bubble watch",
+  "description": "Project to track the college basketball bubble",
   "main": "index.js",
-  "dependencies": {
-    "axios": "^0.21.1",
-    "dotenv": "^8.2.0",
-    "moment": "^2.29.1",
-    "twitter": "^1.7.1"
-  },
-  "devDependencies": {},
   "scripts": {
-    "test": "npm test"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jaredwheet/bubble_watcher.git"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jaredwheet/bubble_watcher/issues"
   },
-  "homepage": "https://github.com/jaredwheet/bubble_watcher#readme"
+  "homepage": "https://github.com/jaredwheet/bubble_watcher#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "sportsdataverse": "^1.0.12",
+    "twitter": "^1.7.1"
+  }
 }

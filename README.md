@@ -1,13 +1,24 @@
 # bubble_watcher
 
-TODO:
-Delay tweets so they dont call come at once
-ONCE A DAY TWEET BUBBLE GAMES IN THE MORNING
-AT END OF DAY TWEET ALL BUBBLE GAMES
-ONCE GAME GOES FINAL REMOVE IT FROM BUBBLEGAMES ARRAY
+MVP TODO:
 
-CONNECT BUBBLE TEAMS TO TAG OFFICIAL TWITTER ACCOUNT
+- Date - get todays date dynamically
+- Push todays date as param dynamically
 
-CONNECT WITH NET RATINGS
+Tweet Score Logic
+\*Morning - Tweet all the scheduled bubble games of the day
+Include the Teams, Location, Time and Channel
 
-ADD TIME AND CHANNEL TO TODAYS GAMES
+- Throughout the day
+  \*Tweet score updates for games in progress (ONETWEET WITH ALL SCORES)
+
+  \*Add ESPN gametracker link to in progress
+
+- End of the Night
+  \*Tweet all the results of the bubble games for the day
+
+STRETCH
+
+- Get NET/KENPOM ratings and use those when tweeting.
+- Tweet bubble mover and shakers based on ratings
+- Get twitter hashtags/school accounts to tag them
